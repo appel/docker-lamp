@@ -1,7 +1,8 @@
-# ![Docker-LAMP][logo]
-Docker-LAMP for Apple Silicon MAC M1 is a set of docker images that include the arm64v8/ubuntu:18.04 baseimage, along with a LAMP stack ([Apache][apache], [MySQL][mysql] and multiple [PHP][php]) all in one handy package especially for Apple Silicon Mac M1 (ARM architecture).
+# Docker-LAMP
 
-With Ubuntu **18.04** images on the `latest` tags, Docker-LAMP is flexible enough to use with all of your LAMP projects.
+Docker-LAMP is a set of docker images that include the ubuntu:22.04 baseimage, along with a LAMP stack ([Apache][apache], [MySQL][mysql] and multiple [PHP][php]) all in one handy package.
+
+With Ubuntu **22.04** images on the `latest` tags, Docker-LAMP is flexible enough to use with all of your LAMP projects.
 
 [![Docker Hub][shield-docker-hub]][info-docker-hub]
 [![License][shield-license]][info-license]
@@ -36,9 +37,9 @@ With Ubuntu **18.04** images on the `latest` tags, Docker-LAMP is flexible enoug
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Introduction
-As a developer, part of my day to day role is to build LAMP applications. I searched in vein for an image that had everything I wanted, up-to-date packages, a simple interface, good documentation and active support. 
+As a developer, part of my day to day role is to build LAMP applications. I searched in vein for an image that had everything I wanted, up-to-date packages, a simple interface, good documentation and active support.
 
-Designed to be a single interface that just 'gets out of your way', and works on 18.04 with php 5, 7, and 8.
+Designed to be a single interface that just 'gets out of your way', and works on 22.04 with php 5, 7, and 8.
 
 ## Image Versions
 The table below shows the PHP, MySQL and Apache versions that come with it.
@@ -47,22 +48,21 @@ Component | `latest`
 ---|---
 [Apache][apache] | `2.4.29`
 [MySQL][mysql] | `5.7.34`
-[PHP][php] | `5.6`, `7.4`, `8.0`
-[phpMyAdmin][phpmyadmin] | `5.1.1`
-[ionCube][ioncube] | `10.2`
+[PHP][php] | `5.6`, `7.4`, `8.2`
+[phpMyAdmin][phpmyadmin] | `5.2.1`
 
 
 ## Using the image
 ### On the command line
 This is the quickest way
 ```bash
-# Launch a 18.04 based image
-docker run -p "80:80" -v ${PWD}/app:/app gagalkoding/lamp:latest
+# Launch a 22.04 based image
+docker run -p "80:80" -v ${PWD}/app:/app appel/docker-lamp:latest
 ```
 
 ### With a Dockerfile
 ```docker
-FROM gagalkoding/lamp:latest
+FROM appel/docker-lamp:latest
 
 # Your custom commands
 
@@ -98,21 +98,21 @@ docker exec CONTAINER_ID  mysql -uroot -e "create database DATABASE_NAME"
 You can change PHP version using .htaccess on each project folder.
 ```
 # change to PHP 5.6
-<FilesMatch \.php> 
-    # Apache 2.4.10+ can proxy to unix socket 
-    SetHandler "proxy:unix:/var/run/php/php5.6-fpm.sock|fcgi://localhost/" 
+<FilesMatch \.php>
+    # Apache 2.4.10+ can proxy to unix socket
+    SetHandler "proxy:unix:/var/run/php/php5.6-fpm.sock|fcgi://localhost/"
 </FilesMatch>
 
 # change to PHP 7.4
-<FilesMatch \.php> 
-    # Apache 2.4.10+ can proxy to unix socket 
-    SetHandler "proxy:unix:/var/run/php/php7.4-fpm.sock|fcgi://localhost/" 
+<FilesMatch \.php>
+    # Apache 2.4.10+ can proxy to unix socket
+    SetHandler "proxy:unix:/var/run/php/php7.4-fpm.sock|fcgi://localhost/"
 </FilesMatch>
 
-# change to PHP 8.0
-<FilesMatch \.php> 
-    # Apache 2.4.10+ can proxy to unix socket 
-    SetHandler "proxy:unix:/var/run/php/php8.0-fpm.sock|fcgi://localhost/" 
+# change to PHP 8.2
+<FilesMatch \.php>
+    # Apache 2.4.10+ can proxy to unix socket
+    SetHandler "proxy:unix:/var/run/php/php8.2-fpm.sock|fcgi://localhost/"
 </FilesMatch>
 ```
 
@@ -130,45 +130,45 @@ The below examples assume the following project layout and that you are running 
 In english, your project should contain a folder called `app` containing all of your app's code. That's pretty much it.
 
 ### Adding your app
-The below command will run the docker image `gagalkoding/lamp:latest` interactively, exposing port `80` on the host machine with port `80` on the docker container. It will then create a volume linking the `app/` directory within your project to the `/app` directory on the container. This is where Apache is expecting your PHP to live.
+The below command will run the docker image `appel/docker-lamp:latest` interactively, exposing port `80` on the host machine with port `80` on the docker container. It will then create a volume linking the `app/` directory within your project to the `/app` directory on the container. This is where Apache is expecting your PHP to live.
 ```bash
-docker run -i -t -p "80:80" -v ${PWD}/app:/app gagalkoding/lamp:latest
+docker run -i -t -p "80:80" -v ${PWD}/app:/app appel/docker-lamp:latest
 ```
 
 ### Persisting your MySQL
-The below command will run the docker image `gagalkoding/lamp:latest`, creating a `mysql/` folder within your project. This folder will be linked to `/var/lib/mysql` where all of the MySQL files from container lives. You will now be able to stop/start the container and keep your database changes.
+The below command will run the docker image `appel/docker-lamp:latest`, creating a `mysql/` folder within your project. This folder will be linked to `/var/lib/mysql` where all of the MySQL files from container lives. You will now be able to stop/start the container and keep your database changes.
 
 You may also add `-p 3306:3306` after `-p 80:80` to expose the mysql sockets on your host machine. This will allow you to connect an external application such as SequelPro or MySQL Workbench.
 ```bash
-docker run -i -t -p "80:80" -v ${PWD}/mysql:/var/lib/mysql gagalkoding/lamp:latest
+docker run -i -t -p "80:80" -v ${PWD}/mysql:/var/lib/mysql appel/docker-lamp:latest
 ```
 
 ### Doing both
 The below command is our 'recommended' solution. It both adds your own PHP and persists database files. We have created a more advanced alias in our `.bash_profile` files to enable the short commands `ldi` and `launchdocker`. See the next section for an example.
 ```bash
-docker run -i -t -p "80:80" -v ${PWD}/app:/app -v ${PWD}/mysql:/var/lib/mysql gagalkoding/lamp:latest
+docker run -i -t -p "80:80" -v ${PWD}/app:/app -v ${PWD}/mysql:/var/lib/mysql appel/docker-lamp:latest
 ```
 
 #### `.bash_profile` alias examples
-The below example can be added to your `~/.bash_profile` file to add the alias commands `ldi` and `launchdocker`. By default it will launch the 18.04 image.
+The below example can be added to your `~/.bash_profile` file to add the alias commands `ldi` and `launchdocker`. By default it will launch the 22.04 image.
 ```bash
-# A helper function to launch docker container using gagalkoding/lamp with overrideable parameters
+# A helper function to launch docker container using appel/docker-lamp with overrideable parameters
 #
 # $1 - Apache Port (optional)
 # $2 - MySQL Port (optional - no value will cause MySQL not to be mapped)
 function launchdockerwithparams {
     APACHE_PORT=80
     MYSQL_PORT_COMMAND=""
-    
+
     if ! [[ -z "$1" ]]; then
         APACHE_PORT=$1
     fi
-    
+
     if ! [[ -z "$2" ]]; then
         MYSQL_PORT_COMMAND="-p \"$2:3306\""
     fi
 
-    docker run -i -t -p "$APACHE_PORT:80" $MYSQL_PORT_COMMAND -v ${PWD}/app:/app -v ${PWD}/mysql:/var/lib/mysql gagalkoding/lamp:latest
+    docker run -i -t -p "$APACHE_PORT:80" $MYSQL_PORT_COMMAND -v ${PWD}/app:/app -v ${PWD}/mysql:/var/lib/mysql appel/docker-lamp:latest
 }
 alias launchdocker='launchdockerwithparams $1 $2'
 alias ldi='launchdockerwithparams $1 $2'
@@ -195,10 +195,10 @@ git clone https://github.com/gagalkoding/docker-lamp.git
 cd docker-lamp
 
 # Build the images
-docker build -t=gagalkoding/lamp:latest -f ./1804/Dockerfile .
+docker build -t=appel/docker-lamp:latest -f ./2204/Dockerfile .
 
 # Run the image as a container
-docker run -d -p "3000:80" gagalkoding/lamp:latest
+docker run -d -p "3000:80" appel/docker-lamp:latest
 
 # Sleep to allow the container to boot
 sleep 5
@@ -238,7 +238,7 @@ Docker-LAMP is licensed under the [Apache 2.0 License][info-license].
 
 [end-of-life]: http://php.net/supported-versions.php
 
-[info-docker-hub]: https://hub.docker.com/r/gagalkoding/lamp
+[info-docker-hub]: https://hub.docker.com/r/appel/docker-lamp
 [info-license]: LICENSE
 
 [shield-docker-hub]: https://img.shields.io/badge/docker%20hub-gagalkoding%2Flamp-brightgreen.svg

@@ -1,14 +1,14 @@
-FROM arm64v8/ubuntu:18.04
-ENV REFRESHED_AT 2021-07-04
+FROM ubuntu:22.04
+ENV REFRESHED_AT 2023-08-13
 
-ENV DOCKER_USER_ID 501 
+ENV DOCKER_USER_ID 501
 ENV DOCKER_USER_GID 20
 
 ENV BOOT2DOCKER_ID 1000
 ENV BOOT2DOCKER_GID 50
 
-ENV PHPMYADMIN_VERSION=5.1.1
-ENV SUPERVISOR_VERSION=4.2.2
+ENV PHPMYADMIN_VERSION=5.2.1
+ENV SUPERVISOR_VERSION=4.2.5
 
 # Tweaks to give Apache/PHP write permissions to the app
 RUN usermod -u ${BOOT2DOCKER_ID} www-data && \
@@ -20,15 +20,15 @@ RUN usermod -u ${BOOT2DOCKER_ID} www-data && \
 
 # Install packages
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y update
-RUN apt-get -y dist-upgrade
-RUN apt-get -y install software-properties-common
+RUN apt -y update
+RUN apt -y dist-upgrade
+RUN apt -y install software-properties-common
 RUN add-apt-repository -y ppa:ondrej/php && \
   apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C && \
-  apt-get update && \
-  apt-get -y upgrade && \
-  apt-get -y install postfix python3-setuptools wget git apache2 openssl libapache2-mod-fcgid mysql-server pwgen zip unzip curl php5.6 php5.6-fpm php5.6-xdebug php5.6-mysql php5.6-apcu php5.6-gd php5.6-xml php5.6-common php5.6-json php5.6-mbstring php5.6-gettext php5.6-zip php5.6-curl php5.6-cli php5.6-bcmath php5.6-bz2 php5.6-fpm php5.6-gd php5.6-mcrypt php7.4 php7.4-fpm php7.4-xdebug php7.4-mysql php7.4-apcu php7.4-gd php7.4-xml php7.4-common php7.4-json php7.4-mbstring php7.4-gettext php7.4-zip php7.4-curl php7.4-cli php7.4-bcmath php7.4-bz2 php7.4-fpm php7.4-gd php7.4-mcrypt php8.0 php8.0-fpm php8.0-xdebug php8.0-mysql php8.0-apcu php8.0-gd php8.0-xml php8.0-common php8.0-mbstring php8.0-gettext php8.0-zip php8.0-curl php8.0-cli php8.0-bcmath php8.0-bz2 php8.0-fpm php8.0-gd php8.0-mcrypt && \
-  apt-get -y autoremove && \
+  apt update && \
+  apt -y upgrade && \
+  apt -y install postfix python3-setuptools wget git apache2 openssl libapache2-mod-fcgid mysql-server pwgen zip unzip curl php5.6 php5.6-fpm php5.6-xdebug php5.6-mysql php5.6-apcu php5.6-gd php5.6-xml php5.6-common php5.6-json php5.6-mbstring php5.6-gettext php5.6-zip php5.6-curl php5.6-cli php5.6-bcmath php5.6-bz2 php5.6-fpm php5.6-gd php5.6-mcrypt php7.4 php7.4-fpm php7.4-xdebug php7.4-mysql php7.4-apcu php7.4-gd php7.4-xml php7.4-common php7.4-json php7.4-mbstring php7.4-gettext php7.4-zip php7.4-curl php7.4-cli php7.4-bcmath php7.4-bz2 php7.4-fpm php7.4-gd php7.4-mcrypt php8.0 php8.0-fpm php8.0-xdebug php8.0-mysql php8.0-apcu php8.0-gd php8.0-xml php8.0-common php8.0-mbstring php8.0-gettext php8.0-zip php8.0-curl php8.0-cli php8.0-bcmath php8.0-bz2 php8.0-fpm php8.0-gd php8.0-mcrypt php8.1 php8.1-fpm php8.1-xdebug php8.1-mysql php8.1-apcu php8.1-gd php8.1-xml php8.1-common php8.1-mbstring php8.1-gettext php8.1-zip php8.1-curl php8.1-cli php8.1-bcmath php8.1-bz2 php8.1-fpm php8.1-gd php8.1-mcrypt php8.2 php8.2-fpm php8.2-xdebug php8.2-mysql php8.2-apcu php8.2-gd php8.2-xml php8.2-common php8.2-mbstring php8.2-gettext php8.2-zip php8.2-curl php8.2-cli php8.2-bcmath php8.2-bz2 php8.2-fpm php8.2-gd php8.2-mcrypt && \
+  apt -y autoremove && \
   echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Install supervisor 4
@@ -84,15 +84,7 @@ ADD app/ /app
 #Environment variables to configure php
 ENV PHP_UPLOAD_MAX_FILESIZE 64M
 ENV PHP_POST_MAX_SIZE 64M
-ENV PHP_VERSION 7.4
-
-RUN wget 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_aarch64.tar.gz'
-RUN tar xzf ioncube_loaders_lin_aarch64.tar.gz -C /usr/local
-#RUN mkdir -p /tmp/ioncube
-#RUN tar -xvzf ioncube_loaders_lin_aarch64.tar.gz
-#RUN mv ioncube/ioncube_loader_lin_7.4.so `php-config --extension-dir`
-RUN rm -Rf ioncube_loaders_lin_aarch64.tar.gz
-#RUN docker-php-ext-enable ioncube_loader_lin_7.4
+ENV PHP_VERSION 8.2
 
 # Add volumes for the app and MySql
 VOLUME  ["/var/lib/mysql", "/app" ]

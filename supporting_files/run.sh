@@ -12,7 +12,7 @@ VOLUME_HOME="/var/lib/mysql"
 #   PHP_POST_MAX_SIZE
 #   PHP_TIMEZONE
 # Arguments:
-#   $1 - PHP version i.e. 5.6, 7.3 etc.
+#   $1 - PHP version i.e. 5.6, 7.4, 8.2 etc.
 # Returns:
 #   None
 #######################################
@@ -23,31 +23,31 @@ function replace_apache_php_ini_values () {
         -e "s/^post_max_size.*/post_max_size = ${PHP_POST_MAX_SIZE}/" /etc/php/$1/fpm/php.ini
 
     sed -i "s/;date.timezone =/date.timezone = Asia\/Jakarta/g" /etc/php/$1/fpm/php.ini
-    
-    if [ $1 != '8.0' ]; then sed -i '$ a zend_extension = \/usr\/local\/ioncube\/ioncube_loader_lin_'"$1"'.so' /etc/php/$1/fpm/php.ini; fi
+
+    if [ $1 != '8.2' ]; then sed -i '$ a zend_extension = \/usr\/local\/ioncube\/ioncube_loader_lin_'"$1"'.so' /etc/php/$1/fpm/php.ini; fi
 
 }
 if [ -e /etc/php/5.6/fpm/php.ini ]; then replace_apache_php_ini_values "5.6"; fi
 if [ -e /etc/php/7.4/fpm/php.ini ]; then replace_apache_php_ini_values "7.4"; fi
-if [ -e /etc/php/8.0/fpm/php.ini ]; then replace_apache_php_ini_values "8.0"; fi
+if [ -e /etc/php/8.2/fpm/php.ini ]; then replace_apache_php_ini_values "8.2"; fi
 
 #######################################
 # Use sed to replace cli php.ini values for a given PHP version.
 # Globals:
 #   PHP_TIMEZONE
 # Arguments:
-#   $1 - PHP version i.e. 5.6, 7.3 etc.
+#   $1 - PHP version i.e. 5.6, 7.4, 8.2 etc.
 # Returns:
 #   None
 #######################################
 function replace_cli_php_ini_values () {
     echo "Replacing CLI php.ini values"
     sed -i  "s/;date.timezone =/date.timezone = Asia\/Jakarta/g" /etc/php/$1/cli/php.ini
-    if [ $1 != '8.0' ]; then sed -i '$ a zend_extension = \/usr\/local\/ioncube\/ioncube_loader_lin_'"$1"'.so' /etc/php/$1/cli/php.ini; fi
+    if [ $1 != '8.2' ]; then sed -i '$ a zend_extension = \/usr\/local\/ioncube\/ioncube_loader_lin_'"$1"'.so' /etc/php/$1/cli/php.ini; fi
 }
 if [ -e /etc/php/5.6/cli/php.ini ]; then replace_cli_php_ini_values "5.6"; fi
 if [ -e /etc/php/7.4/cli/php.ini ]; then replace_cli_php_ini_values "7.4"; fi
-if [ -e /etc/php/8.0/cli/php.ini ]; then replace_cli_php_ini_values "8.0"; fi
+if [ -e /etc/php/8.2/cli/php.ini ]; then replace_cli_php_ini_values "8.2"; fi
 
 echo "Editing APACHE_RUN_GROUP environment variable"
 sed -i "s/export APACHE_RUN_GROUP=www-data/export APACHE_RUN_GROUP=staff/" /etc/apache2/envvars
@@ -116,12 +116,12 @@ fi
 a2enmod rewrite
 a2enmod actions alias proxy_fcgi fcgid
 a2enconf php5.6-fpm
-a2enconf php8.0-fpm
+a2enconf php8.2-fpm
 a2enconf php7.4-fpm
 service php5.6-fpm start
-service php8.0-fpm start
+service php8.2-fpm start
 service php7.4-fpm start
-update-alternatives --set php /usr/bin/php7.4
+update-alternatives --set php /usr/bin/php8.2
 service apache2 restart
 
 echo "Starting supervisord"
